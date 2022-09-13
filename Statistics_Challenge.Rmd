@@ -1,0 +1,36 @@
+---
+title: "Statistics Challenge"
+author: "Estefania Cuevas-Zepeda"
+date: "2022-09-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+#load library
+library(dplyr)
+
+#load data
+data <- read.csv("https://covid.ourworldindata.org/data/owid-covid-data.csv",
+       na.strings = "",header=T)
+for (i in 1:length(unique(data$human_development_index))){
+  data1 <- data[which((data$human_development_index==unique(data$human_development_index)[i])&(data$continent=="Asia")),]
+  data1 <- data1 %>% select("iso_code","human_development_index","new_cases", "excess_mortality")
+  if (sum(rowSums(!is.na(data1[,3:4]))==2)>=10){
+    res <- rbind(res, c(unique(data$human_development_index)[i],
+                        cor.test(data1[,3],data1[,4])$estimate,
+                        cor.test(data1[,3],data1[,4])$p.value))
+  }}
+z <- res[which((as.numeric(res[,2])>0.8)& (as.numeric(res[,3])<=0.05)),]
+z
+```
+
+## Conclusion from Analysis
+
+Based on the analysis conducted, countries with a human development index greater than 0.718 show a positive correlation between new Covid-19 cases in Asia and excess mortality. In other words, areas with better facilities experienced a greater number of observed deaths than expected deaths with increasing Covid-19 cases. The data shows that for a region in Asia with a 0.718 human development index, there is a correlation coefficient of 0.808 between new Covid-19 cases and excess mortality. Since a p-value of 5.91*10^-7 was calculated, it provides evidence that there is significant correlation between human development and excess mortality regarding Covid-19 cases in Asia. Therefore, this suggests that areas with better infrastructure are more likely to accurately capture mortalities than those with less developed infrastructure. Infrastructure in this case may be translated to hospital networks and their ability to record mortality events. Less developed infrastructure may result in a decreased mortality count because all mortality events may not be  recorded in one centralized data set. 
